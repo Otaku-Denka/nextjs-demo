@@ -18,6 +18,7 @@ module.exports = {
   plugins: ['react'],
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
+    'no-console': 'off',
     'jsx-a11y/anchor-is-valid': [
       'off',
       {

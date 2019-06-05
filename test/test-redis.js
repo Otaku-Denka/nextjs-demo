@@ -1,6 +1,6 @@
-async function test() {
-  const Redis = require('ioredis');
+import Redis from 'ioredis';
 
+async function test() {
   const redis = new Redis({
     port: 6379,
   });

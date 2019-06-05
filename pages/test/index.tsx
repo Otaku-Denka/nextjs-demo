@@ -1,11 +1,6 @@
 import Link from 'next/link';
 import styled from 'styled-components';
 
-/**
- * @params
- * @returns asdad
- * @
- */
 const Test: React.FunctionComponent = () => {
   return (
     <div>

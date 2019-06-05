@@ -7,8 +7,6 @@
         "start": "cross-env NODE_ENV=production node dist/index.js"
     },
     "dependencies": {
-        "@types/koa-router": "^7.0.40",
-        "@types/styled-components": "^4.1.15",
         "@zeit/next-css": "^1.0.1",
         "@zeit/next-typescript": "^1.1.1",
         "antd": "^3.16.6",
@@ -27,9 +25,11 @@
         "@babel/node": "^7.4.5",
         "@babel/preset-env": "^7.4.5",
         "@types/koa": "^2.0.48",
+        "@types/koa-router": "^7.0.40",
         "@types/next": "^8.0.5",
         "@types/react": "^16.8.18",
         "@types/react-dom": "^16.8.4",
+        "@types/styled-components": "^4.1.15",
         "babel-plugin-import": "^1.11.0",
         "babel-plugin-styled-components": "^1.10.0",
         "commitizen": "^3.1.1",

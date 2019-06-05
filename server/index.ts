@@ -13,14 +13,12 @@ app.prepare().then(
 
     server.use(router.routes());
 
-    server.use(
-      async (ctx: Koa.BaseContext): void => {
-        await handle(ctx.req, ctx.res);
-        ctx.respond = false;
-      },
-    );
+    server.use(async (ctx: Koa.BaseContext) => {
+      await handle(ctx.req, ctx.res);
+      ctx.respond = false;
+    });
 
-    server.use(async (ctx: Koa.BaseContext, next: void) => {
+    server.use(async (ctx: Koa.BaseContext, next: any) => {
       ctx.res.statusCode = 200;
       await next();
     });
