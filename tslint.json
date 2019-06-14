@@ -22,7 +22,17 @@
     "import-name": false,
     "no-boolean-literal-compare": false,
     "no-submodule-imports": false,
-    "variable-name": false
+    "variable-name": false,
+    "function-name": [
+      true,
+      {
+        "method-regex": "^\\*?\\[?[a-zA-Z][\\w\\d\\.]*\\]?$",
+        "private-method-regex": "^\\*?\\[?[a-zA-Z][\\w\\d\\.]*\\]?$",
+        "protected-method-regex": "^\\*?\\[?[a-zA-Z][\\w\\d\\.]*\\]?$",
+        "static-method-regex": "^\\*?\\[?[a-zA-Z][\\w\\d\\.]*\\]?$",
+        "function-regex": "^\\*?\\[?[a-zA-Z][\\w\\d\\.]*\\]?$"
+      }
+    ]
   },
   "rulesDirectory": ["node_modules/tslint-eslint-rules/dist/rules"]
 }
