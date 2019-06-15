@@ -2,11 +2,13 @@ import Container from './container';
 import { Layout, Icon, Input, Tooltip, Avatar } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
 import Link from 'next/link';
+import { withRouter } from 'next/router';
 
 const { Header, Content, Footer } = Layout;
 
 interface MyProps {
   user?: any;
+  router: any;
 }
 
 const InnerHeaderStyle = {
@@ -14,7 +16,7 @@ const InnerHeaderStyle = {
   justifyContent: 'space-between',
 };
 
-const MyLayout: React.FunctionComponent<MyProps> = ({ children }) => {
+const MyLayout: React.FunctionComponent<MyProps> = ({ children, router }) => {
   return (
     <Layout>
       <GlobalStyle />
@@ -30,7 +32,7 @@ const MyLayout: React.FunctionComponent<MyProps> = ({ children }) => {
           </HeaderLeft>
           <HeaderRight>
             <Tooltip title="點擊登入">
-              <a href={'/'}>
+              <a href={`/prepare-auth?url=${router.asPath}`}>
                 <Avatar size={40} icon="user" />
               </a>
             </Tooltip>
@@ -74,4 +76,4 @@ const GithubIcon = styled(Icon)`
   padding-top: 10px;
   margin-right: 20px;
 `;
-export default MyLayout;
+export default withRouter(MyLayout);
