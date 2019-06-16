@@ -6,7 +6,6 @@ import withReduxStore from '../lib/with-redux-store';
 import { Provider } from 'react-redux';
 import { NextComponentType, NextContext } from 'next';
 
-const isServer = typeof window === 'undefined';
 interface AppProps {
   Component: NextComponentType;
   ctx: NextContext;
@@ -14,31 +13,28 @@ interface AppProps {
   pageProps?: any;
 }
 
-export default withReduxStore(
-  class MyApp extends App<AppProps> {
-    async getInitialProps({ Component, ctx }: AppProps) {
-      if (isServer) {
-        console.log('server');
-      }
-      return {
-        test: 'yeseaeasad',
-        pageProps: Component.getInitialProps
-          ? await Component.getInitialProps(ctx)
-          : {},
-        ctx: ctx ? ctx : null,
-      };
+class MyApp extends App<AppProps> {
+  static async getInitialProps(ctx: any) {
+    const { Component } = ctx;
+    let pageProps = {};
+    if (Component.getInitialProps) {
+      pageProps = await Component.getInitialProps(ctx);
     }
-    render() {
-      const { Component, pageProps, reduxStore } = this.props;
-      return (
-        <Container>
-          <Provider store={reduxStore}>
-            <Layout>
-              <Component {...pageProps} />
-            </Layout>
-          </Provider>
-        </Container>
-      );
-    }
-  },
-);
+    return {
+      pageProps,
+    };
+  }
+  render() {
+    const { Component, pageProps, reduxStore } = this.props;
+    return (
+      <Container>
+        <Provider store={reduxStore}>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </Provider>
+      </Container>
+    );
+  }
+}
+export default withReduxStore(MyApp);
