@@ -12,6 +12,7 @@
   "jsRules": {},
   "rules": {
     "object-literal-sort-keys": false,
+    "no-shadowed-variable": false,
     "jsx-wrap-multiline": false,
     "no-constant-condition": true,
     "interface-name": [true, "never-prefix"],

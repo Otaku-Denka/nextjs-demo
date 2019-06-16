@@ -1,14 +1,21 @@
 import Container from './container';
-import { Layout, Icon, Input, Tooltip, Avatar } from 'antd';
+import { Layout, Icon, Input, Tooltip, Avatar, Dropdown, Menu } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
 import Link from 'next/link';
 import { withRouter } from 'next/router';
+import { connect } from 'react-redux';
+import { Userstate } from '../../redux/types/user';
+import { NextFunctionComponent } from 'next';
+import { logout } from '../../redux/actions/user';
+import { bindActionCreators, Dispatch } from 'redux';
+import { ReducersState } from '../../redux/store';
 
 const { Header, Content, Footer } = Layout;
 
 interface MyProps {
-  user?: any;
+  user?: Userstate;
   router: any;
+  logout: any;
 }
 
 const InnerHeaderStyle = {
@@ -16,7 +23,30 @@ const InnerHeaderStyle = {
   justifyContent: 'space-between',
 };
 
-const MyLayout: React.FunctionComponent<MyProps> = ({ children, router }) => {
+const MyLayout: NextFunctionComponent<MyProps> = ({
+  children,
+  router,
+  user,
+  logout,
+}) => {
+  const handleLogout = () => {
+    logout();
+  };
+  const userDropDown = (
+    <Menu>
+      <Menu.Item>
+        <a
+          href="javascript:void(0)"
+          onClick={() => {
+            handleLogout();
+            console.log('log out ');
+          }}>
+          登 出
+        </a>
+      </Menu.Item>
+    </Menu>
+  );
+
   return (
     <Layout>
       <GlobalStyle />
@@ -31,15 +61,29 @@ const MyLayout: React.FunctionComponent<MyProps> = ({ children, router }) => {
             </div>
           </HeaderLeft>
           <HeaderRight>
-            <Tooltip title="點擊登入">
-              <a href={`/prepare-auth?url=${router.asPath}`}>
-                <Avatar size={40} icon="user" />
-              </a>
-            </Tooltip>
+            {user && user.id ? (
+              <Dropdown overlay={userDropDown}>
+                <a>
+                  <Avatar size={40} src={user.avatar_url} />
+                </a>
+              </Dropdown>
+            ) : (
+              <Tooltip title="點擊登入">
+                <a href={`/prepare-auth?url=${router.asPath}`}>
+                  <Avatar size={40} icon="user" />
+                </a>
+              </Tooltip>
+            )}
           </HeaderRight>
         </Container>
       </Header>
-      <Container>{children}</Container>
+      <Content>
+        <Container>{children}</Container>
+      </Content>
+      <MyFooter>
+        Develop by Otaku_denka @
+        <a href="mailto:jay7396@hotmail.com">jay7396@gmail.com</a>
+      </MyFooter>
     </Layout>
   );
 };
@@ -76,4 +120,23 @@ const GithubIcon = styled(Icon)`
   padding-top: 10px;
   margin-right: 20px;
 `;
-export default withRouter(MyLayout);
+
+const MyFooter = styled(Footer)`
+  text-align: center;
+`;
+const mapStateToProps = (state: ReducersState) => {
+  return {
+    user: state.user,
+  };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch) => {
+  return {
+    logout: bindActionCreators(logout, dispatch),
+  };
+};
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withRouter(MyLayout));

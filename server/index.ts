@@ -41,7 +41,6 @@ app.prepare().then(
 
     server.use(async (ctx: any) => {
       ctx.req.session = ctx.session;
-      ctx.req.test = 'test';
       await handle(ctx.req, ctx.res);
       ctx.respond = false;
     });
