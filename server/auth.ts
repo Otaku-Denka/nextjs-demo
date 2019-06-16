@@ -3,9 +3,11 @@ import config from '../config';
 import Koa from 'koa';
 
 const { client_secret, client_id, request_token_url } = config.github;
-interface ContextWithSession extends Koa.BaseContext {
-  session?: any;
+
+interface ContextWithSession extends Koa.Context {
+  session: any;
 }
+
 export default (server: Koa) => {
   server.use(async (ctx: ContextWithSession, next: any) => {
     if (ctx.path === '/auth') {

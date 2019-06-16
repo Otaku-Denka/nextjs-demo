@@ -28,16 +28,22 @@ app.prepare().then(
     server.use(session(SESSION_CONFIG, server));
     server.use(router.routes());
     auth(server);
-
-    server.use(async (ctx: Koa.BaseContext) => {
-      ctx.req.session = ctx.session;
-      await handle(ctx.req, ctx.res);
-      ctx.respond = false;
+    router.get('/api/user/info', async (ctx: any) => {
+      const user = ctx.session.userInfo;
+      if (!user) {
+        ctx.status = 401;
+        ctx.body = 'Need Login';
+      } else {
+        ctx.body = user;
+        ctx.set('Content-Type', 'application/json');
+      }
     });
 
-    server.use(async (ctx: Koa.BaseContext, next: any) => {
-      ctx.res.statusCode = 200;
-      await next();
+    server.use(async (ctx: any) => {
+      ctx.req.session = ctx.session;
+      ctx.req.test = 'test';
+      await handle(ctx.req, ctx.res);
+      ctx.respond = false;
     });
 
     server.listen(

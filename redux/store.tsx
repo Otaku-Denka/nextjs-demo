@@ -3,6 +3,7 @@ import { composeWithDevTools } from 'redux-devtools-extension';
 import thunkMiddleware from 'redux-thunk';
 import common, { commonInitialState } from './reducers/common';
 import user, { userInitialState } from './reducers/user';
+
 const reducers = combineReducers({
   common,
   user,

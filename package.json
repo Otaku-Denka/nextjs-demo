@@ -1,7 +1,7 @@
 {
     "name": "nextjs-with-github-sample",
     "scripts": {
-        "dev": "nodemon",
+        "dev": "ts-node --project tsconfig.server.json server/index.ts --exec babel-node",
         "commit": "npx git-cz",
         "build": "next build && tsc --project tsconfig.server.json",
         "start": "cross-env NODE_ENV=production node dist/index.js"
@@ -38,6 +38,7 @@
         "@types/koa-router": "^7.0.40",
         "@types/koa-session": "^5.10.0",
         "@types/next": "^8.0.5",
+        "@types/next-redux-wrapper": "^2.0.2",
         "@types/react": "^16.8.18",
         "@types/react-dom": "^16.8.4",
         "@types/react-redux": "^7.1.0",
