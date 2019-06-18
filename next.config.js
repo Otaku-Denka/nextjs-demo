@@ -1,6 +1,6 @@
-import withCss from '@zeit/next-css';
-import withTypescript from '@zeit/next-typescript';
-import config from './config';
+const withCss = require('@zeit/next-css');
+const withTypescript = require('@zeit/next-typescript');
+const { GITHUB_OAUTH_URL, OAUTH_URL } = require('./config');
 
 if (typeof require !== 'undefined') {
   require.extensions['.css'] = () => {};
@@ -9,8 +9,9 @@ if (typeof require !== 'undefined') {
 module.exports = withTypescript(
   withCss({
     publicRuntimeConfig: {
-      GITHUB_OAUTH_URL: config.GITHUB_OAUTH_URL,
-      OAUTH_URL: config.OAUTH_URL,
+      GITHUB_OAUTH_URL,
+      OAUTH_URL,
+      GITHUB_API_URL: 'https://api.github.com',
     },
   }),
 );

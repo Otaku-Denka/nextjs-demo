@@ -19,6 +19,7 @@ module.exports = {
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'no-console': 'off',
+    '--isolatedModules': 'off',
     camelcase: 'off',
     'jsx-a11y/anchor-is-valid': [
       'off',

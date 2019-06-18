@@ -34,7 +34,7 @@ export default (Comp: any) => {
 
         if (session && session.userInfo) {
           reduxStore = getOrCreateStore({
-            user: session.userInfo,
+            user: { data: { ...session.userInfo, ...session.githubAuth } },
           });
         } else {
           reduxStore = getOrCreateStore();

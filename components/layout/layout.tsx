@@ -1,3 +1,4 @@
+import { useCallback } from 'react';
 import Container from './container';
 import { Layout, Icon, Input, Tooltip, Avatar, Dropdown, Menu } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -29,9 +30,8 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
   user,
   logout,
 }) => {
-  const handleLogout = () => {
-    logout();
-  };
+  const handleLogout = useCallback(() => logout(), [logout]);
+
   const userDropDown = (
     <Menu>
       <Menu.Item>
@@ -61,10 +61,10 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
             </div>
           </HeaderLeft>
           <HeaderRight>
-            {user && user.id ? (
+            {user && user.data && user.data.id ? (
               <Dropdown overlay={userDropDown}>
                 <a>
-                  <Avatar size={40} src={user.avatar_url} />
+                  <Avatar size={40} src={user.data.avatar_url} />
                 </a>
               </Dropdown>
             ) : (
