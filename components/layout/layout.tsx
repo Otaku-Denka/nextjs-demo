@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import Container from './container';
 import { Layout, Icon, Input, Tooltip, Avatar, Dropdown, Menu } from 'antd';
 import styled, { createGlobalStyle } from 'styled-components';
@@ -10,6 +10,7 @@ import { NextFunctionComponent } from 'next';
 import { logout } from '../../redux/actions/user';
 import { bindActionCreators, Dispatch } from 'redux';
 import { ReducersState } from '../../redux/store';
+import { searchingRepos } from '../../redux/actions/search';
 
 const { Header, Content, Footer } = Layout;
 
@@ -17,6 +18,7 @@ interface MyProps {
   user?: Userstate;
   router: any;
   logout: any;
+  searchingRepos: any;
 }
 
 const InnerHeaderStyle = {
@@ -29,9 +31,24 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
   router,
   user,
   logout,
+  searchingRepos,
 }) => {
   const handleLogout = useCallback(() => logout(), [logout]);
+  const urlQuery = router.query && router.query.query;
 
+  const [search, setSearch] = useState(urlQuery || '');
+
+  const handleSearchChange = useCallback(
+    (event) => {
+      setSearch(event.target.value);
+    },
+    [setSearch],
+  );
+
+  const handleOnSearch = useCallback(() => {
+    router.push(`/search?query=${search}`);
+    searchingRepos(`?q=${search}`);
+  }, [search]);
   const userDropDown = (
     <Menu>
       <Menu.Item>
@@ -57,7 +74,12 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
               <GithubIcon type="github" />
             </Link>
             <div>
-              <Input.Search placeholder="search repo" />
+              <Input.Search
+                placeholder="search"
+                value={search}
+                onChange={handleSearchChange}
+                onSearch={handleOnSearch}
+              />
             </div>
           </HeaderLeft>
           <HeaderRight>
@@ -133,6 +155,7 @@ const mapStateToProps = (state: ReducersState) => {
 const mapDispatchToProps = (dispatch: Dispatch) => {
   return {
     logout: bindActionCreators(logout, dispatch),
+    searchingRepos: bindActionCreators(searchingRepos, dispatch),
   };
 };
 

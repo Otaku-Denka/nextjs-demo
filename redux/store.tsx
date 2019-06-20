@@ -6,23 +6,33 @@ import user, { userInitialState } from './reducers/user';
 import { Userstate } from './types/user';
 import repos, { reposInitialState } from './reducers/repos';
 import { RepoState } from './types/repos';
+import search, { searchInitialState } from './reducers/search';
+import { SearchState } from './types/search';
+import detail, { detailInitialState } from './reducers/detail';
+import { DetailState } from './types/detail';
 
 export interface ReducersState {
   common: CommonState;
   user: Userstate;
   repos: RepoState;
+  search: SearchState;
+  detail: DetailState;
 }
 
 const reducers = combineReducers({
   common,
   user,
   repos,
+  search,
+  detail,
 });
 
 const initialState: ReducersState = {
   common: commonInitialState,
   user: userInitialState,
   repos: reposInitialState,
+  search: searchInitialState,
+  detail: detailInitialState,
 };
 
 export const initStore = (state: ReducersState = initialState) => {

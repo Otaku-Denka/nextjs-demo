@@ -17,6 +17,8 @@ module.exports = {
   },
   plugins: ['react'],
   rules: {
+    'no-param-reassign': 'off',
+    'consistent-return': 'off',
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'no-console': 'off',
     '--isolatedModules': 'off',

@@ -62,6 +62,16 @@ export interface RepoItem {
   stargazers_count: number;
 }
 
+export interface RepoReadme {
+  name: string;
+  path: string;
+  sha: string;
+  size: number;
+  url: string;
+  content: string;
+  encoding: string;
+}
+
 export interface RepoState {
   isFetching: boolean;
   userRepos: RepoItem[];

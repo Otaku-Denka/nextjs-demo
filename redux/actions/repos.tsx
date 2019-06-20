@@ -7,8 +7,7 @@ import {
   FETCHING_STARED_REPOS_FAILURE,
 } from './constants';
 import axios from 'axios';
-// import { ThunkAction, ThunkDispatch } from 'redux-thunk';
-import { Dispatch, ActionCreator } from 'redux';
+import { Dispatch } from 'redux';
 import getCofnig from 'next/config';
 const { publicRuntimeConfig } = getCofnig();
 const { GITHUB_API_URL } = publicRuntimeConfig;
@@ -41,7 +40,7 @@ function fetchingStaredRepoFailure(err: any): FetchingStaredRepoFailure {
   };
 }
 
-export function fetchingStaredRepo(cb: any): any {
+export function fetchingStaredRepo(cb?: any): any {
   return async (dispatch: Dispatch, getState: any): Promise<any> => {
     try {
       const store = getState();
@@ -91,7 +90,7 @@ function fetchingUserRepoFailure(err: any): FetchingUserRepoFailure {
   };
 }
 
-export function fetchingUserRepo(cb: any): any {
+export function fetchingUserRepo(cb?: any): any {
   return async (dispatch: Dispatch, getState: any): Promise<any> => {
     try {
       const store = getState();

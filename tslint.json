@@ -11,7 +11,9 @@
   ],
   "jsRules": {},
   "rules": {
+    "no-empty": false,
     "object-literal-sort-keys": false,
+    "align": false,
     "no-shadowed-variable": false,
     "jsx-wrap-multiline": false,
     "no-constant-condition": true,

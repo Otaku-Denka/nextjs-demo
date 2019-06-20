@@ -1,34 +1,56 @@
 import React from 'react';
 import { NextFunctionComponent } from 'next';
-import Router, { withRouter } from 'next/router';
-import { Button, Icon, Tabs } from 'antd';
+import Router, { withRouter, RouterProps } from 'next/router';
+import { Button, Icon, Tabs, Spin } from 'antd';
 import { connect } from 'react-redux';
 import { ReducersState } from '../redux/store';
 import { Userstate } from '../redux/types/user';
 import styled from 'styled-components';
 import getCofnig from 'next/config';
-import Link from 'next/link';
 import { fetchingUserRepo, fetchingStaredRepo } from '../redux/actions/repos';
 import { bindActionCreators } from 'redux';
-import { RepoState, RepoItem } from '../redux/types/repos';
+import { RepoItem } from '../redux/types/repos';
 import Repo from '../components/common/repo';
 
 const { publicRuntimeConfig } = getCofnig();
 
+interface RouterWithQuery extends RouterProps {
+  query: {
+    key: string;
+  };
+}
+
+const isServer = typeof window === 'undefined';
+
 interface HomeProps {
   user: Userstate;
-  router: any;
-  repos: RepoState;
+  router: RouterWithQuery;
+  userRepos: RepoItem[];
+  staredRepos: RepoItem[];
+  isFetching: boolean;
+  fetchingUserRepo: any;
+  fetchingStaredRepo: any;
 }
 
 const Home: NextFunctionComponent<any> = ({
   user,
   router,
-  repos,
+  userRepos,
+  staredRepos,
+  isFetching,
+  fetchingUserRepo,
+  fetchingStaredRepo,
 }: HomeProps) => {
   const tabKey = router.query.key || '1';
   const handleTabChange = (activeKey: string) => {
-    Router.push(`/?key=${activeKey}`);
+    if (!isFetching) {
+      Router.push(`/?key=${activeKey}`);
+      if (activeKey === '1') {
+        fetchingUserRepo();
+      } else if (activeKey === '2') {
+        fetchingStaredRepo();
+      }
+    }
   };
 
   if (!user.data || !user.data.id) {
@@ -40,6 +62,7 @@ const Home: NextFunctionComponent<any> = ({
       </UnauthContainer>
     );
   }
+
   return (
     <RootContainer>
       <UserInfoContainer>
@@ -59,15 +82,27 @@ const Home: NextFunctionComponent<any> = ({
       <UserReposContainer>
         <Tabs activeKey={tabKey} onChange={handleTabChange} animated={false}>
           <Tabs.TabPane tab="your repo" key="1">
-            {repos.userRepos.map((item: RepoItem) => {
-              return <Repo repo={item} key={item.id} />;
-            })}
+            {isFetching ? (
+              <LoadingContainer>
+                <Spin />
+              </LoadingContainer>
+            ) : (
+              userRepos.map((item: RepoItem) => {
+                return <Repo repo={item} key={item.id} />;
+              })
+            )}
           </Tabs.TabPane>
 
           <Tabs.TabPane tab="star" key="2">
-            {repos.staredRepos.map((item: RepoItem) => {
-              return <Repo repo={item} key={item.id} />;
-            })}
+            {isFetching ? (
+              <LoadingContainer>
+                <Spin />
+              </LoadingContainer>
+            ) : (
+              staredRepos.map((item: RepoItem) => {
+                return <Repo repo={item} key={item.id} />;
+              })
+            )}
           </Tabs.TabPane>
         </Tabs>
       </UserReposContainer>
@@ -77,7 +112,7 @@ const Home: NextFunctionComponent<any> = ({
 
 Home.getInitialProps = async (props: any) => {
   const { user, repos } = props.reduxStore.getState();
-  const { staredRepos, userRepos } = repos;
+  const { userRepos, staredRepos } = repos;
   if (user && user.data && user.data.id) {
     const fetchingUserRepoAction = bindActionCreators(
       fetchingUserRepo,
@@ -88,16 +123,15 @@ Home.getInitialProps = async (props: any) => {
       fetchingStaredRepo,
       props.reduxStore.dispatch,
     );
-    if (userRepos.length === 0) {
-      await fetchingUserRepoAction((result: any) => {
-        console.log('user repo: ');
-      });
+    if (
+      userRepos.length === 0 &&
+      (props.router.query.key === '1' || !props.router.query.key)
+    ) {
+      await fetchingUserRepoAction();
     }
 
-    if (staredRepos.length === 0) {
-      await fetchingStaredRepoAction((result: any) => {
-        console.log('stared: ');
-      });
+    if (staredRepos.length === 0 && props.router.query.key === '2') {
+      await fetchingStaredRepoAction();
     }
 
     // return { repo };
@@ -153,11 +187,32 @@ const UserReposContainer = styled.div`
   flex-grow: 1;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  margin-top: 50px;
+  justify-content: center;
+  align-items: center;
+`;
+
 const mapStateToProps = (state: ReducersState) => {
   return {
     user: state.user,
-    repos: state.repos,
+    isFetching: state.repos.isFetching,
+    staredRepos: state.repos.staredRepos,
+    userRepos: state.repos.userRepos,
   };
 };
 
-export default withRouter(connect(mapStateToProps)(Home));
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    fetchingUserRepo: bindActionCreators(fetchingUserRepo, dispatch),
+    fetchingStaredRepo: bindActionCreators(fetchingStaredRepo, dispatch),
+  };
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(Home),
+);
