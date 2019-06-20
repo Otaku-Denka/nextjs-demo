@@ -3,6 +3,9 @@ import {
   FETCHING_REPO_BASIC_REQUEST,
   FETCHING_REPO_BASIC_SUCCESS,
   FETCHING_REPO_BASIC_FAILURE,
+  FETCHING_REPO_README_REQUEST,
+  FETCHING_REPO_README_SUCCESS,
+  FETCHING_REPO_README_FAILURE,
 } from '../actions/constants';
 
 export const detailInitialState: DetailState = {
@@ -70,6 +73,27 @@ export default function detail(
         isFetching: false,
         err: action.err,
         repoBasic: detailInitialState.repoBasic,
+      };
+    case FETCHING_REPO_README_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        err: '',
+        readme: detailInitialState.readme,
+      };
+    case FETCHING_REPO_README_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        err: '',
+        readme: action.payload,
+      };
+    case FETCHING_REPO_README_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        err: action.err,
+        readme: detailInitialState.readme,
       };
     default:
       return state;

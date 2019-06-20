@@ -56,19 +56,23 @@ export default (Comp: any, type: string = 'index') => {
 
   WithDetail.getInitialProps = async (props: any) => {
     const { detail } = props.reduxStore.getState();
-    const query = props.router.query;
-    const { owner, name } = query;
+
+    const { owner, name } = props.ctx.query;
     const fetchingRepoBasicAction = bindActionCreators(
       fetchingRepoBasic,
       props.reduxStore.dispatch,
     );
     let queryString = '';
+    let pageData = {};
+    if (Comp.getInitialProps) {
+      pageData = await Comp.getInitialProps(props);
+    }
 
     queryString = `/repos/${owner}/${name}`;
     if (detail.repoBasic.full_name !== `${owner}/${name}`) {
       await fetchingRepoBasicAction(queryString);
     }
-    return {};
+    return { pageData };
   };
 
   const mapStateToProps = (state: ReducersState) => {

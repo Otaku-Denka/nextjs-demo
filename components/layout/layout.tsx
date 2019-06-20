@@ -56,7 +56,6 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
           href="javascript:void(0)"
           onClick={() => {
             handleLogout();
-            console.log('log out ');
           }}>
           登 出
         </a>
@@ -91,7 +90,7 @@ const MyLayout: NextFunctionComponent<MyProps> = ({
               </Dropdown>
             ) : (
               <Tooltip title="點擊登入">
-                <a href={`/prepare-auth?url=${router.asPath}`}>
+                <a href={`/prepare-auth?url=${encodeURI(router.asPath)}`}>
                   <Avatar size={40} icon="user" />
                 </a>
               </Tooltip>

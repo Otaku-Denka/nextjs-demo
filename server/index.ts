@@ -6,11 +6,21 @@ import koaBody from 'koa-body';
 import auth from './auth';
 import IORedis from 'ioredis';
 import RedisSessionStore from './session-store';
+import atob from 'atob';
+
+declare global {
+  namespace NodeJS {
+    interface Global {
+      atob: any;
+    }
+  }
+}
 
 const dev = process.env.NODE_ENV !== 'production';
 const app = Next({ dev });
 const handle = app.getRequestHandler();
 const redis = new IORedis();
+global.atob = atob;
 
 app.prepare().then(
   (): void => {

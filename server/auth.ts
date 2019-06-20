@@ -1,6 +1,7 @@
 import axios from 'axios';
 import config from '../config';
 import Koa from 'koa';
+import Url from 'url-parse';
 
 const { client_secret, client_id, request_token_url } = config.github;
 
@@ -71,9 +72,11 @@ export default (server: Koa) => {
     const path = ctx.path;
     const method = ctx.method;
     if (path === '/prepare-auth' && method === 'GET') {
-      const { url } = ctx.query;
+      let url: any = Url(ctx.url).query;
+      if (url) {
+        url = url.replace('?url=', '');
+      }
       ctx.session.urlBeforeOAuth = url;
-
       ctx.redirect(config.OAUTH_URL);
     } else {
       await next();

@@ -81,7 +81,7 @@ const Home: NextFunctionComponent<any> = ({
       </UserInfoContainer>
       <UserReposContainer>
         <Tabs activeKey={tabKey} onChange={handleTabChange} animated={false}>
-          <Tabs.TabPane tab="your repo" key="1">
+          <Tabs.TabPane tab="Repositories" key="1">
             {isFetching ? (
               <LoadingContainer>
                 <Spin />
@@ -93,7 +93,7 @@ const Home: NextFunctionComponent<any> = ({
             )}
           </Tabs.TabPane>
 
-          <Tabs.TabPane tab="star" key="2">
+          <Tabs.TabPane tab="Stars" key="2">
             {isFetching ? (
               <LoadingContainer>
                 <Spin />
