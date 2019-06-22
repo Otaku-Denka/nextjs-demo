@@ -4,9 +4,11 @@
         "dev": "ts-node --project tsconfig.server.json server/index.ts --exec babel-node",
         "commit": "npx git-cz",
         "build": "next build && tsc --project tsconfig.server.json",
-        "start": "cross-env NODE_ENV=production node dist/server/index.js"
+        "start": "cross-env NODE_ENV=production node dist/server/index.js",
+        "analyze:browser": "cross-env BUNDLE_ANALYZE=browser next build"
     },
     "dependencies": {
+        "@zeit/next-bundle-analyzer": "^0.1.2",
         "@zeit/next-css": "^1.0.1",
         "@zeit/next-typescript": "^1.1.1",
         "antd": "^3.16.6",
@@ -18,6 +20,7 @@
         "koa-body": "^4.1.0",
         "koa-router": "^7.4.0",
         "koa-session": "^5.12.0",
+        "lodash": "^4.17.11",
         "markdown-it": "^8.4.2",
         "moment": "^2.24.0",
         "next": "^8.1.0",
@@ -30,7 +33,8 @@
         "redux-thunk": "^2.3.0",
         "reselect": "^4.0.0",
         "styled-components": "^4.2.0",
-        "url-parse": "^1.4.7"
+        "url-parse": "^1.4.7",
+        "webpack": "^4.35.0"
     },
     "devDependencies": {
         "@airship/tslint-react-a11y": "^1.1.0",
@@ -45,6 +49,7 @@
         "@types/koa": "^2.0.48",
         "@types/koa-router": "^7.0.40",
         "@types/koa-session": "^5.10.0",
+        "@types/lodash": "^4.14.134",
         "@types/markdown-it": "0.0.7",
         "@types/next": "^8.0.5",
         "@types/next-redux-wrapper": "^2.0.2",

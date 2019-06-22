@@ -50,16 +50,16 @@ export function fetchingStaredRepo(cb?: any): any {
         Authorization: `${token_type} ${access_token}`,
       };
       dispatch(fetchingStaredRepoRequest());
-      const userRepos = await axios.get(`${GITHUB_API_URL}/user/starred`, {
+      const staredRepos = await axios.get(`${GITHUB_API_URL}/user/starred`, {
         headers,
       });
-      if (userRepos.status === 200) {
-        dispatch(fetchingStaredRepoSuccess(userRepos.data));
+      if (staredRepos.status === 200) {
+        dispatch(fetchingStaredRepoSuccess(staredRepos.data));
       } else {
-        dispatch(fetchingStaredRepoFailure(userRepos));
+        dispatch(fetchingStaredRepoFailure(staredRepos));
       }
       if (cb) {
-        cb(userRepos);
+        cb(staredRepos);
       }
     } catch (e) {
       if (cb) {

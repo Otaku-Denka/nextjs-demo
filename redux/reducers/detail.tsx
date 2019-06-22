@@ -6,6 +6,12 @@ import {
   FETCHING_REPO_README_REQUEST,
   FETCHING_REPO_README_SUCCESS,
   FETCHING_REPO_README_FAILURE,
+  FETCHING_REPO_ISSUES_REQUEST,
+  FETCHING_REPO_ISSUES_SUCCESS,
+  FETCHING_REPO_ISSUES_FAILURE,
+  FETCHING_REPO_LABELS_REQUEST,
+  FETCHING_REPO_LABELS_SUCCESS,
+  FETCHING_REPO_LABELS_FAILURE,
 } from '../actions/constants';
 
 export const detailInitialState: DetailState = {
@@ -35,7 +41,14 @@ export const detailInitialState: DetailState = {
     },
     stargazers_count: 0,
   },
+  issues: [],
+  labels: {
+    full_name: '',
+    items: [],
+  },
+
   readme: {
+    full_name: '',
     name: '',
     path: '',
     sha: '',
@@ -95,6 +108,55 @@ export default function detail(
         err: action.err,
         readme: detailInitialState.readme,
       };
+    case FETCHING_REPO_ISSUES_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        err: '',
+        issues: [],
+      };
+    case FETCHING_REPO_ISSUES_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        err: '',
+        issues: action.payload,
+      };
+    case FETCHING_REPO_ISSUES_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        err: action.err,
+        issues: [],
+      };
+    case FETCHING_REPO_LABELS_REQUEST:
+      return {
+        ...state,
+        isFetching: true,
+        err: '',
+        labels: {
+          full_name: '',
+          items: [],
+        },
+      };
+    case FETCHING_REPO_LABELS_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        err: '',
+        labels: action.payload,
+      };
+    case FETCHING_REPO_LABELS_FAILURE:
+      return {
+        ...state,
+        isFetching: false,
+        err: action.err,
+        labels: {
+          full_name: '',
+          items: [],
+        },
+      };
+
     default:
       return state;
   }

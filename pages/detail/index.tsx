@@ -22,14 +22,21 @@ Detail.getInitialProps = async ({
     query: { owner, name },
   },
 }: any) => {
-  // console.log('detail getInitialProps invoked')
-
+  const store = reduxStore.getState();
+  const { detail } = store;
+  const { readme } = detail;
   const fetchingRepoReadmeAction = bindActionCreators(
     fetchingRepoReadme,
     reduxStore.dispatch,
   );
-  const qs = `/repos/${owner}/${name}/readme`;
-  await fetchingRepoReadmeAction(qs);
+  const fullname = {
+    owner,
+    name,
+  };
+
+  if (readme.full_name !== `${owner}/${name}`) {
+    await fetchingRepoReadmeAction(fullname);
+  }
   return {};
 };
 

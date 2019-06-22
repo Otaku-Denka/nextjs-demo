@@ -1,4 +1,4 @@
-import { memo, isValidElement } from 'react';
+import { memo, isValidElement, useCallback, useRef } from 'react';
 import { withRouter, RouterProps } from 'next/router';
 import { Row, Col, List, Pagination, Spin } from 'antd';
 import Link from 'next/link';
@@ -16,19 +16,31 @@ const isServer = typeof window === 'undefined';
 const per_page = 20;
 function noop() {}
 
-const FilterLink = memo(({ name, query, lang, sort, order, page }: any) => {
-  let queryString = `?query=${query}`;
-  if (lang) queryString += `&lang=${lang}`;
-  if (sort) queryString += `&sort=${sort}&order=${order || 'desc'}`;
-  if (page) queryString += `&page=${page}`;
-  queryString += `&per_page=${per_page}`;
+const FilterLink = memo(
+  ({ name, query, lang, sort, order, page, handleClick }: any) => {
+    let queryString = `?query=${query}`;
+    if (lang) queryString += `&lang=${lang}`;
+    if (sort) queryString += `&sort=${sort}&order=${order || 'desc'}`;
+    if (page) queryString += `&page=${page}`;
+    queryString += `&per_page=${per_page}`;
 
-  return (
-    <Link href={`/search${queryString}`}>
-      <div>{isValidElement(name) ? name : <a>{name}</a>}</div>
-    </Link>
-  );
-});
+    const handleOnclick = useCallback(() => {
+      let qs = `?q=${query}`;
+      if (lang) qs += `+language:${lang}`;
+      if (sort) qs += `&sort=${sort}&order=${order || 'desc'}`;
+      if (page) qs += `&page=${page}`;
+      qs += `&per_page=${per_page}`;
+      handleClick(qs);
+    }, []);
+    return (
+      <Link href={`/search${queryString}`}>
+        <div onClick={handleOnclick}>
+          {isValidElement(name) ? name : <a>{name}</a>}
+        </div>
+      </Link>
+    );
+  },
+);
 
 const LANGUAGES = ['JavaScript', 'HTML', 'CSS', 'TypeScript', 'Java', 'Rust'];
 const SORT_TYPES = [
@@ -70,15 +82,22 @@ interface RouterWithQuery extends RouterProps {
 interface SearchProps {
   router: RouterWithQuery;
   search: SearchState;
+  searchingRepos: any;
 }
 
 const Search: NextFunctionComponent<any> = ({
   router,
   search,
+  searchingRepos,
 }: SearchProps) => {
   const { ...querys } = router.query;
-  const { lang, sort, order, page } = router.query;
-
+  const { lang, sort, order, page, query } = router.query;
+  const lastFetchIdRef = useRef(0);
+  const handleClick = useCallback((qs: string) => {
+    lastFetchIdRef.current += 1;
+    const fetchId = lastFetchIdRef.current;
+    searchingRepos(qs, fetchId);
+  }, []);
   return (
     <Container>
       <Row gutter={20}>
@@ -95,7 +114,12 @@ const Search: NextFunctionComponent<any> = ({
                   {selected ? (
                     <span>{item}</span>
                   ) : (
-                    <FilterLink {...querys} lang={item} name={item} />
+                    <FilterLink
+                      {...querys}
+                      lang={item}
+                      name={item}
+                      handleClick={handleClick}
+                    />
                   )}
                 </StyledListItem>
               );
@@ -122,6 +146,7 @@ const Search: NextFunctionComponent<any> = ({
                       sort={item.value}
                       order={item.order}
                       name={item.name}
+                      handleClick={handleClick}
                     />
                   )}
                 </StyledListItem>
@@ -130,17 +155,29 @@ const Search: NextFunctionComponent<any> = ({
           />
         </Col>
         <Col span={18}>
-          <RepoTitle>{search.total_count} items</RepoTitle>
-          {search.items.map((repo: RepoItem) => (
-            <Repo repo={repo} key={repo.id} />
-          ))}
+          <RepoTitle>{search.repos.total_count} items</RepoTitle>
+          {search.err ? (
+            <p>網路請求過多</p>
+          ) : search.isFetching ? (
+            <LoadingContainer>
+              <Spin />
+            </LoadingContainer>
+          ) : (
+            search.repos.items.map((repo: RepoItem) => (
+              <Repo repo={repo} key={repo.id} />
+            ))
+          )}
           {search.isFetching ? null : (
             <PaginationContainer>
               <div className="pagination">
                 <Pagination
                   pageSize={per_page}
                   current={Number(page) || 1}
-                  total={1000}
+                  total={
+                    search.repos.total_count > 1000
+                      ? 1000
+                      : search.repos.total_count
+                  }
                   onChange={noop}
                   itemRender={(page, type, ol) => {
                     const p =
@@ -150,7 +187,14 @@ const Search: NextFunctionComponent<any> = ({
                         ? page - 1
                         : page + 1;
                     const name = type === 'page' ? page : ol;
-                    return <FilterLink {...querys} page={p} name={name} />;
+                    return (
+                      <FilterLink
+                        {...querys}
+                        page={p}
+                        name={name}
+                        handleClick={handleClick}
+                      />
+                    );
                   }}
                 />
               </div>
@@ -196,8 +240,17 @@ const PaginationContainer = styled.div`
   text-align: center;
 `;
 
+const LoadingContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 50px;
+`;
+
 Search.getInitialProps = async ({ ctx, reduxStore }: any) => {
   const { query, sort, lang, order, page } = ctx.query;
+  const store = reduxStore.getState();
+  const { search } = store;
   const searchingReposAction = bindActionCreators(
     searchingRepos,
     reduxStore.dispatch,
@@ -208,8 +261,9 @@ Search.getInitialProps = async ({ ctx, reduxStore }: any) => {
   if (page) queryString += `&page=${page}`;
 
   queryString += `&per_page=${per_page}`;
-
-  await searchingReposAction(queryString);
+  if (isServer && search.repos.items.length === 0) {
+    await searchingReposAction(queryString);
+  }
 
   return {};
 };
@@ -220,4 +274,15 @@ const mapStateToProps = (state: ReducersState) => {
   };
 };
 
-export default withRouter(connect(mapStateToProps)(Search));
+const mapDispatchToProps = (dispatch: any) => {
+  return {
+    searchingRepos: bindActionCreators(searchingRepos, dispatch),
+  };
+};
+
+export default withRouter(
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
+  )(Search),
+);

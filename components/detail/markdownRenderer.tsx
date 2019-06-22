@@ -14,10 +14,13 @@ function b64_to_utf8(str: string) {
 
 interface MarkdownRendererProps {
   content: string;
-  isBase64: boolean;
+  isBase64?: boolean;
 }
 
-const MarkdownRenderer = ({ content, isBase64 }: MarkdownRendererProps) => {
+const MarkdownRenderer = ({
+  content,
+  isBase64 = false,
+}: MarkdownRendererProps) => {
   const markdown = isBase64 ? b64_to_utf8(content) : content;
 
   const html = useMemo(() => md.render(markdown), [markdown]);

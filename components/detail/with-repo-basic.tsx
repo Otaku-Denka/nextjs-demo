@@ -62,15 +62,18 @@ export default (Comp: any, type: string = 'index') => {
       fetchingRepoBasic,
       props.reduxStore.dispatch,
     );
-    let queryString = '';
+
     let pageData = {};
     if (Comp.getInitialProps) {
       pageData = await Comp.getInitialProps(props);
     }
 
-    queryString = `/repos/${owner}/${name}`;
+    const fullname = {
+      owner,
+      name,
+    };
     if (detail.repoBasic.full_name !== `${owner}/${name}`) {
-      await fetchingRepoBasicAction(queryString);
+      await fetchingRepoBasicAction(fullname);
     }
     return { pageData };
   };

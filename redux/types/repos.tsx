@@ -70,6 +70,7 @@ export interface RepoReadme {
   url: string;
   content: string;
   encoding: string;
+  full_name: string;
 }
 
 export interface RepoState {
