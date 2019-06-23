@@ -34,9 +34,7 @@ const SearchUser: NextFunctionComponent<any> = ({
       lastFetchIdRef.current += 1;
       const fetchId = lastFetchIdRef.current;
       const query = `?q=${value}`;
-      if (value) {
-        searchUsers(query, fetchId);
-      }
+      searchUsers(query, fetchId);
     }, 500),
     [],
   );

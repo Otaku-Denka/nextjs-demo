@@ -20,8 +20,6 @@ interface RouterWithQuery extends RouterProps {
   };
 }
 
-const isServer = typeof window === 'undefined';
-
 interface HomeProps {
   user: Userstate;
   router: RouterWithQuery;
